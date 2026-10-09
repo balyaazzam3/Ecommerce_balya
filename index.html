@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TokoSaya - Belanja Online</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  body { scroll-behavior: smooth; }
+
+  /* Carousel: foto tampil utuh (tidak di-crop/zoom), latar = foto yang sama diburamkan */
+  .carousel-item { height: clamp(220px, 46vw, 500px); background: #0f172a; overflow: hidden; }
+  .carousel-item::before {
+    content: ""; position: absolute; inset: -20px;
+    background: var(--bg) center / cover no-repeat;
+    filter: blur(22px) brightness(.7);
+  }
+  .carousel-item img { position: relative; width: 100%; height: 100%; object-fit: contain; }
+  .carousel-caption { background: rgba(0,0,0,.45); border-radius: 8px; }
+
+  .hero { background: linear-gradient(135deg, #0f766e, #115e59); color: #fff; }
+  .produk-img { height: 240px; object-fit: contain; background: #f1f5f9; }
+  .card { transition: box-shadow .2s; }
+  .card:hover { box-shadow: 0 6px 18px rgba(0,0,0,.12); }
+  section[id] { scroll-margin-top: 70px; }
+  #modalGambar { max-height: 320px; object-fit: contain; background: #f1f5f9; }
+</style>
+</head>
+<body>
+
+<!-- 1. NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-success" href="#"><i class="bi bi-bag-heart-fill"></i> TokoSaya</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu" aria-label="Menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link active" href="#">Beranda</a></li>
+        <li class="nav-item"><a class="nav-link" href="#produk">Produk</a></li>
+        <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
+      </ul>
+      <form class="d-flex me-lg-3 my-2 my-lg-0" onsubmit="return false">
+        <input id="cari" class="form-control" type="search" placeholder="Cari produk..." aria-label="Cari produk">
+      </form>
+      <button class="btn btn-success position-relative" data-bs-toggle="offcanvas" data-bs-target="#keranjang">
+        <i class="bi bi-cart3"></i> Keranjang
+        <span id="badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- 2. CAROUSEL -->
+<div id="slider" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#slider" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#slider" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#slider" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active" style="--bg:url('https://i.pinimg.com/1200x/29/75/2e/29752e21ea99c0cbd40c684bab59444b.jpg')">
+      <img src="https://i.pinimg.com/1200x/29/75/2e/29752e21ea99c0cbd40c684bab59444b.jpg" class="d-block" alt="Promo akhir tahun">
+      <div class="carousel-caption d-none d-md-block"><h5>Promo Akhir Tahun</h5><p>Diskon hingga 50% untuk produk pilihan.</p></div>
+    </div>
+    <div class="carousel-item" style="--bg:url('https://i.pinimg.com/736x/7b/65/ba/7b65ba6aae15914d9a6720dab8e59f38.jpg')">
+      <img src="https://i.pinimg.com/736x/7b/65/ba/7b65ba6aae15914d9a6720dab8e59f38.jpg" class="d-block" alt="Produk terbaru">
+      <div class="carousel-caption d-none d-md-block"><h5>Produk Terbaru</h5><p>Koleksi baru sudah tersedia.</p></div>
+    </div>
+    <div class="carousel-item" style="--bg:url('https://i.pinimg.com/1200x/ee/15/7e/ee157ea254f69c355c59e94ec640448d.jpg')">
+      <img src="https://i.pinimg.com/1200x/ee/15/7e/ee157ea254f69c355c59e94ec640448d.jpg" class="d-block" alt="Gratis ongkir">
+      <div class="carousel-caption d-none d-md-block"><h5>Gratis Ongkir</h5><p>Untuk pembelian di atas Rp300.000.</p></div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#slider" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span><span class="visually-hidden">Sebelumnya</span></button>
+  <button class="carousel-control-next" type="button" data-bs-target="#slider" data-bs-slide="next"><span class="carousel-control-next-icon"></span><span class="visually-hidden">Berikutnya</span></button>
+</div>
+
+<!-- 3. HERO CTA -->
+<header class="hero py-5">
+  <div class="container text-center py-3">
+    <h1 class="fw-bold">Belanja Mudah, Harga Terjangkau</h1>
+    <p class="lead mb-4">Ribuan produk berkualitas dikirim langsung ke rumah Anda.</p>
+    <a href="#produk" class="btn btn-light btn-lg me-2"><i class="bi bi-bag-check"></i> Belanja Sekarang</a>
+    <a href="#faq" class="btn btn-outline-light btn-lg"><i class="bi bi-question-circle"></i> Pelajari Lebih Lanjut</a>
+  </div>
+</header>
+
+<!-- 4. PRODUCT SECTION -->
+<section id="produk" class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2>Keep it casual, keep it cool</h2>
+      <p class="text-secondary">temukan sepatu casual favorit kamu</p>
+    </div>
+    <div id="daftarProduk" class="row g-4"></div>
+    <p id="kosong" class="text-center text-muted d-none mt-4">
+      <i class="bi bi-search fs-1 d-block"></i>Produk tidak ditemukan. Coba kata kunci lain.
+    </p>
+  </div>
+</section>
+
+<!-- 5. MODAL (detail produk) -->
+<div id="modalProduk" class="modal fade" tabindex="-1" aria-labelledby="mNama" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mNama">Detail Produk</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <img id="modalGambar" class="img-fluid rounded w-100 mb-3" alt="">
+        <span id="mKategori" class="badge text-bg-info mb-2"></span>
+        <h5 id="mHarga" class="text-success"></h5>
+        <p id="mDeskripsi" class="mb-0"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
+        <button type="button" id="mTambah" class="btn btn-success" data-bs-dismiss="modal"><i class="bi bi-cart-plus"></i> Tambah ke Keranjang</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. ACCORDION / FAQ -->
+<section id="faq" class="py-5 bg-light">
+  <div class="container" style="max-width:760px">
+    <h2 class="fw-bold text-center mb-4">Pertanyaan yang Sering Diajukan</h2>
+    <div class="accordion" id="accFaq">
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#f1">Bagaimana cara memesan produk?</button></h3>
+        <div id="f1" class="accordion-collapse collapse show" data-bs-parent="#accFaq"><div class="accordion-body">Pilih produk, klik "Tambah ke Keranjang", lalu buka keranjang dan lanjutkan ke pembayaran.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f2">Metode pembayaran apa saja yang tersedia?</button></h3>
+        <div id="f2" class="accordion-collapse collapse" data-bs-parent="#accFaq"><div class="accordion-body">Transfer bank, e-wallet, kartu kredit, dan bayar di tempat (COD).</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f3">Berapa lama pengiriman?</button></h3>
+        <div id="f3" class="accordion-collapse collapse" data-bs-parent="#accFaq"><div class="accordion-body">Pengiriman memakan waktu 2-5 hari kerja tergantung lokasi tujuan.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f4">Apakah barang bisa dikembalikan?</button></h3>
+        <div id="f4" class="accordion-collapse collapse" data-bs-parent="#accFaq"><div class="accordion-body">Bisa, maksimal 7 hari setelah barang diterima selama kondisi masih baik dan segel utuh.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer id="kontak" class="bg-dark text-light py-4">
+  <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+    <span>&copy; 2026 TokoSaya. Semua hak dilindungi.</span>
+    <span><i class="bi bi-envelope"></i> halo@tokosaya.id &nbsp; <i class="bi bi-whatsapp"></i> 0812-3456-7890 &nbsp; <i class="bi bi-instagram"></i> @tokosaya</span>
+  </div>
+</footer>
+
+<!-- 7. OFF CANVAS (keranjang) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="keranjang" aria-labelledby="judulKeranjang">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title" id="judulKeranjang"><i class="bi bi-cart3"></i> Keranjang Belanja</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column">
+    <div id="isiKeranjang" class="flex-grow-1"></div>
+    <div class="border-top pt-3">
+      <div class="d-flex justify-content-between fw-bold mb-3"><span>Total</span><span id="total">Rp0</span></div>
+      <button id="checkout" class="btn btn-success w-100"><i class="bi bi-credit-card"></i> Checkout</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Data produk. Tiga produk pertama = produk asli toko; sisanya contoh (ganti foto & harga sesuai produkmu).
+  const produk = [
+    { id: 1, nama: "Adidas Originals Handball Spezial - Navy cw Argen", kategori: "Sepatu", harga: 1020000,
+      gambar: "https://i.pinimg.com/1200x/4f/a0/c2/4fa0c2721f766963432d91eb10e34d37.jpg",
+      deskripsi: "Sepatu casual Handball Spezial warna Navy cw Argen untuk gaya santai sehari-hari." },
+    { id: 2, nama: "Sepatu casual Handball Spezial Grey Black / Abu-Abu Hitam", kategori: "Sepatu", harga: 875000,
+      gambar: "https://i.pinimg.com/1200x/0b/d2/c1/0bd2c1371fbb9a462a6ff18cb6dc855a.jpg",
+      deskripsi: "Upper full suede yang halus banget dipadu gum sole cokelat klasik yang bikin looks lo kelihatan clean, mahal, dan classy." },
+    { id: 3, nama: "Sepatu Casual Spez1all Grey Black Bahan Suede", kategori: "Sepatu", harga: 743850,
+      gambar: "https://i.pinimg.com/1200x/79/a2/2d/79a22dd121079ec7db828204d113f31d.jpg",
+      deskripsi: "Mengusung siluet terrace-classic abad ke-20—dominasi warna suede Grey mutakhir berkombinasi dengan aksen Black kontras yang bold dan elegan." },
+    { id: 4, nama: "adidas Handball Spezial Shoes - Blue | adidas ", kategori: "Sepatu", harga: 749000,
+      gambar: "https://i.pinimg.com/1200x/a1/ac/39/a1ac39dae60a36c31729277c3c3f8767.jpg",
+      deskripsi: "dilapisi suede premium halus dan lentur. Dipadu dengan warna blue (mulai dari Light Blue yang calm sampai Night Indigo yang dark & bold) bikin tampilannya kelihatan clean banget." },
+    { id: 5, nama: "adidas Originals Handball Spezial - Grey Black", kategori: "Sepatu", harga: 7759000,
+      gambar: "https://i.pinimg.com/736x/33/6d/8f/336d8ff8131816ae1db3914d32dbd3ec.jpg",
+      deskripsi: "Perpaduan bodi warna abu-abu (grey) berbahan suede lembut sama aksen tiga garis hitam (black) bikin sepatu ini kelihatan slick banget.." },
+    { id: 6, nama: "adidas Originals Handball Spezial - red", kategori: "Sepatu", harga: 779000,
+      gambar: "https://i.pinimg.com/736x/e3/f2/46/e3f246fba0a7bdf5a738e16ebe607d60.jpg",
+      deskripsi: "Perpaduan bodi warna merah (red) berbahan suede lembut sama aksen tiga garis hitam (black) bikin sepatu ini kelihatan slick banget.." }
+  ];
+
+  const rp = n => "Rp" + n.toLocaleString("id-ID");
+  const $ = id => document.getElementById(id);
+  const modalProduk = new bootstrap.Modal($("modalProduk"));
+  let produkTerpilih = null;
+
+  // Keranjang disimpan di localStorage supaya tidak hilang saat halaman di-refresh
+  let keranjang = [];
+  try { keranjang = JSON.parse(localStorage.getItem("keranjang")) || []; } catch (e) { keranjang = []; }
+  keranjang = keranjang.filter(i => produk.some(p => p.id === i.id));
+  const simpan = () => { try { localStorage.setItem("keranjang", JSON.stringify(keranjang)); } catch (e) {} };
+
+  function tampilkanProduk(daftar) {
+    $("daftarProduk").innerHTML = daftar.map(p => `
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+          <img src="${p.gambar}" class="card-img-top produk-img" alt="${p.nama}" loading="lazy">
+          <div class="card-body d-flex flex-column">
+            <small class="text-muted">${p.kategori}</small>
+            <h6 class="card-title">${p.nama}</h6>
+            <p class="fw-bold text-success mb-3">${rp(p.harga)}</p>
+            <div class="mt-auto d-grid gap-2">
+              <button class="btn btn-outline-secondary btn-sm" data-aksi="detail" data-id="${p.id}"><i class="bi bi-eye"></i> Detail Produk</button>
+              <button class="btn btn-success btn-sm" data-aksi="tambah" data-id="${p.id}"><i class="bi bi-cart-plus"></i> Tambah ke Keranjang</button>
+            </div>
+          </div>
+        </div>
+      </div>`).join("");
+    $("kosong").classList.toggle("d-none", daftar.length > 0);
+  }
+
+  function lihatDetail(id) {
+    produkTerpilih = produk.find(p => p.id === id);
+    $("mNama").textContent = produkTerpilih.nama;
+    $("mKategori").textContent = produkTerpilih.kategori;
+    $("mHarga").textContent = rp(produkTerpilih.harga);
+    $("mDeskripsi").textContent = produkTerpilih.deskripsi;
+    $("modalGambar").src = produkTerpilih.gambar;
+    $("modalGambar").alt = produkTerpilih.nama;
+    modalProduk.show();
+  }
+
+  function tambah(id) {
+    const item = keranjang.find(i => i.id === id);
+    if (item) item.qty++; else keranjang.push({ id, qty: 1 });
+    renderKeranjang();
+    bootstrap.Offcanvas.getOrCreateInstance($("keranjang")).show();
+  }
+
+  function ubahQty(id, delta) {
+    const item = keranjang.find(i => i.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) keranjang = keranjang.filter(i => i.id !== id);
+    renderKeranjang();
+  }
+
+  function renderKeranjang() {
+    let total = 0, jumlah = 0;
+    if (keranjang.length === 0) {
+      $("isiKeranjang").innerHTML = '<p class="text-muted text-center mt-4"><i class="bi bi-cart-x fs-1 d-block"></i>Keranjang masih kosong.</p>';
+    } else {
+      $("isiKeranjang").innerHTML = keranjang.map(i => {
+        const p = produk.find(x => x.id === i.id);
+        total += p.harga * i.qty; jumlah += i.qty;
+        return `<div class="d-flex align-items-center gap-2 mb-3">
+          <img src="${p.gambar}" width="60" height="60" class="rounded bg-light" style="object-fit:contain" alt="${p.nama}">
+          <div class="flex-grow-1"><div class="small fw-semibold">${p.nama}</div><div class="small text-success">${rp(p.harga)}</div></div>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-secondary" data-aksi="kurang" data-id="${p.id}" aria-label="Kurangi"><i class="bi bi-dash"></i></button>
+            <span class="btn btn-light disabled">${i.qty}</span>
+            <button class="btn btn-outline-secondary" data-aksi="tambahQty" data-id="${p.id}" aria-label="Tambah"><i class="bi bi-plus"></i></button>
+          </div></div>`;
+      }).join("");
+    }
+    $("total").textContent = rp(total);
+    $("badge").textContent = jumlah;
+    $("checkout").disabled = keranjang.length === 0;
+    simpan();
+  }
+
+  // Satu event listener untuk semua tombol (produk + keranjang)
+  document.addEventListener("click", e => {
+    const btn = e.target.closest("[data-aksi]");
+    if (!btn) return;
+    const id = Number(btn.dataset.id);
+    const aksi = btn.dataset.aksi;
+    if (aksi === "detail") lihatDetail(id);
+    else if (aksi === "tambah") tambah(id);
+    else if (aksi === "kurang") ubahQty(id, -1);
+    else if (aksi === "tambahQty") ubahQty(id, 1);
+  });
+
+  $("mTambah").addEventListener("click", () => { if (produkTerpilih) tambah(produkTerpilih.id); });
+
+  $("checkout").addEventListener("click", () => {
+    alert("Terima kasih! Fitur pembayaran belum tersedia pada demo ini.");
+  });
+
+  $("cari").addEventListener("input", e => {
+    const q = e.target.value.trim().toLowerCase();
+    tampilkanProduk(produk.filter(p => p.nama.toLowerCase().includes(q) || p.kategori.toLowerCase().includes(q)));
+  });
+
+  // Tutup menu navbar di layar kecil setelah memilih link
+  document.querySelectorAll("#menu .nav-link").forEach(a => a.addEventListener("click", () => {
+    const menu = $("menu");
+    if (menu.classList.contains("show")) bootstrap.Collapse.getOrCreateInstance(menu).hide();
+  }));
+
+  tampilkanProduk(produk);
+  renderKeranjang();
+</script>
+</body>
+</html>
